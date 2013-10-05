@@ -165,7 +165,7 @@ ADMIN_PASS_HASH=`echo -n "${VPSADMIN_USERNAME}${ADMIN_PASS}" | md5sum | cut -d' 
 db_query "USE $DB_NAME ; INSERT INTO members SET m_id=1,m_created=UNIX_TIMESTAMP(NOW()),m_level=99,m_nick='$VPSADMIN_USERNAME',m_pass='$ADMIN_PASS_HASH';"
 
 msg "Loading default configuration"
-db_query "INSERT INTO locations SET location_id=1, location_label='Default location',location_has_ipv6=0,location_remote_console_server='http://$HOSTNAME:4567';"
+db_query "USE $DB_NAME ; INSERT INTO locations SET location_id=1, location_label='Default location',location_has_ipv6=0,location_remote_console_server='http://$HOSTNAME:4567';"
 
 title "Configuring web server..."
 cat > $VE_PRIVATE/etc/httpd/conf.d/vpsadmin.conf <<EOF_HTTPD

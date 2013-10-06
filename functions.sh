@@ -39,6 +39,10 @@ function db_query {
 	echo "$1" | ve_run mysql -u root -p\'$DB_ROOT_PASS\'
 }
 
+function db_import {
+	ve_run mysql -u $DB_USER -p\'$DB_PASS\' $DB_NAME < $1
+}
+
 function read_valid {
 	local default=`eval echo -n \\$$2`
 	
@@ -63,9 +67,17 @@ function read_valid {
 }
 
 function title {
-	echo "* $*"
+	if [ "$STANDALONE" != "no" ] ; then
+		echo "  * $*"
+	else
+		echo "* $*"
+	fi
 }
 
 function msg {
-	echo "  > $*"
+	if [ "$STANDALONE" != "no" ] ; then
+		echo "    > $*"
+	else
+		echo "  > $*"
+	fi
 }

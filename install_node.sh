@@ -28,14 +28,14 @@ if [ "$SKIP_PROMPT" != "yes" ] ; then
 	read_valid "ID:" NODE_ID [0-9]+ "not valid node ID"
 	read_valid "Node name:" NODE_NAME .+
 	read_valid "Cluster FQDN hostname:" DOMAIN .+
-	read_valid "Node role (node, storage, mailer):" NODE_ROLE ^(node|storage|mailer)$ "not valid node role"
+	read_valid "Node role (node, storage, mailer):" NODE_ROLE ^node$|^storage$|^mailer$ "not valid node role"
 	read_valid "Location (ID or label):" NODE_LOC .+
-	read_valid "IP address:" IP_ADDR [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ "not valid IPv4 address"
+	read_valid "IP address:" NODE_IP_ADDR [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ "not valid IPv4 address"
 	
 	if [ "$NODE_ROLE" == "node" ] ; then
 		read_valid "Maximum VPS number:" NODE_MAXVPS [0-9]+ "not valid number"
 		read_valid "VE private (expands %{veid}):" NODE_VE_PRIVATE .+
-		read_valid "FS type (ext4, zfs, zfs_compat):" NODE_FSTYPE ^(ext4|zfs|zfs_compat)$ "not valid FS type"
+		read_valid "FS type (ext4, zfs, zfs_compat):" NODE_FSTYPE ^ext4$|^zfs$|^zfs_compat$ "not valid FS type"
 	fi
 fi
 
@@ -70,7 +70,7 @@ cat > /etc/vpsadmin/vpsadmind.yml <<EOF
     :threads: 4
 
 :console:
-    :host: $IP_ADDR
+    :host: $NODE_IP_ADDR
     :port: 8081
 
 EOF
@@ -101,7 +101,7 @@ msg "Starting vpsAdmind"
 run /etc/init.d/vpsadmind start
 
 msg "Registering"
-cmd="vpsadminctl install --id $NODE_ID --name $NODE_NAME --role $NODE_ROLE --location $NODE_LOC --addr $IP_ADDR --propagate"
+cmd="vpsadminctl install --id $NODE_ID --name $NODE_NAME --role $NODE_ROLE --location $NODE_LOC --addr $NODE_IP_ADDR --propagate"
 
 if [ "$NODE_ROLE" == "node" ] ; then
 	cmd="$cmd --maxvps $NODE_MAXVPS --ve-private $NODE_VE_PRIVATE --fstype $NODE_FSTYPE"
@@ -109,4 +109,6 @@ fi
 
 run "$cmd"
 
-echo "DONE!"
+if [ "$STANDALONE" != "no" ] ; then
+	echo "DONE!"
+fi

@@ -34,8 +34,9 @@ if [ "$DEBUG" == "yes" ] ; then
 	read_valid "To which CT do you want to install vpsAdmin?" VEID [0-9]+ "not valid VEID"
 fi
 
-read_valid "What IP address should vpsAdmin frontend use?" IP_ADDR [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ "not valid IPv4 address"
-read_valid "What is your cluster FQDN? Nodes will run on subdomains" DOMAIN .+
+read_valid "What IP address should vpsAdmin frontend use? (IP of container)" IP_ADDR [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ "not valid IPv4 address"
+read_valid "What IP address should use vpsAdmin daemon? (IP of CT0/HW node)" NODE_IP_ADDR [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ "not valid IPv4 address"
+read_valid "What is your cluster domain? Nodes will run on subdomains" DOMAIN .+
 
 HOSTNAME="vpsadmin.$DOMAIN"
 
@@ -156,7 +157,7 @@ EOF_CONFIG
 # Create DB scheme
 msg "Creating database scheme"
 db_query "FLUSH PRIVILEGES;"
-ve_run mysql -u $DB_USER -p\'$DB_PASS\' $DB_NAME < ${VE_PRIVATE}${VPSADMIN_ROOT}/scripts/scheme.sql
+db_import ${VE_PRIVATE}${VPSADMIN_ROOT}/scripts/scheme.sql
 
 # Create admin user
 msg "Creating admin user"
@@ -167,6 +168,17 @@ db_query "USE $DB_NAME ; INSERT INTO members SET m_id=1,m_created=UNIX_TIMESTAMP
 msg "Loading default configuration"
 db_query "USE $DB_NAME ; INSERT INTO locations SET location_id=1, location_label='Default location',location_has_ipv6=0,location_remote_console_server='http://$HOSTNAME:4567';"
 
+db_import db/cfg_templates.sql
+db_import db/config.sql
+db_import db/sysconfig.sql
+
+db_query "USE $DB_NAME ; INSERT INTO cfg_dns SET dns_ip='$NAMESERVER',dns_label='$NAMESERVER',dns_is_universal=1;"
+db_query "USE $DB_NAME ; INSERT INTO vps SET vps_id=101,vps_created=UNIX_TIMESTAMP(NOW()),m_id=1,vps_hostname='$HOSTNAME',vps_template=1,vps_nameserver='$NAMESERVER',vps_server=100;"
+db_query "USE $DB_NAME ; INSERT INTO vps_ip SET vps_id=$VEID,ip_v=4,ip_location=1,ip_addr='$IP_ADDR';"
+db_query "USE $DB_NAME ; INSERT INTO vps_has_config (vps_id,config_id,\`order\`) VALUES ($VEID,27,1), ($VEID,28,2), ($VEID,6,3), ($VEID,22,4);"
+
+# FIXME: regenerate configs on all nodes
+
 title "Configuring web server..."
 cat > $VE_PRIVATE/etc/httpd/conf.d/vpsadmin.conf <<EOF_HTTPD
 <VirtualHost *:80>
@@ -176,16 +188,31 @@ cat > $VE_PRIVATE/etc/httpd/conf.d/vpsadmin.conf <<EOF_HTTPD
 
 EOF_HTTPD
 
-title "Installing vpsAdmind..."
+# Install vpsAdmind on CT0
+title "Installing vpsAdmind as node..."
+NODE_IP_ADDR="$IP_ADDR"
+NODE_ID=100
+NODE_NAME="`hostname`"
+NODE_ROLE=node
+NODE_LOC=1
+
+SKIP_INTRO="yes"
+SKIP_PROMPT="yes"
+STANDALONE="no"
+
+. install_node.sh
+
+# Install mailer inside CT with vpsAdmin
+title "Installing vpsAdmind as mailer..."
 cat > install_node.tmp <<EOF_INSTALL
 #!/bin/bash
 
-DB_HOST=$DB_HOST
-DB_USER=$DB_USER
-DB_PASS=$DB_PASS
-DB_NAME=$DB_NAME
-DOMAIN=$DOMAIN
-IP_ADDR=$IP_ADDR
+DB_HOST="$DB_HOST"
+DB_USER="$DB_USER"
+DB_PASS="$DB_PASS"
+DB_NAME="$DB_NAME"
+DOMAIN="$DOMAIN"
+NODE_IP_ADDR="$IP_ADDR"
 NODE_ID=1
 NODE_NAME=vpsadmin
 NODE_ROLE=mailer
@@ -193,11 +220,11 @@ NODE_LOC=1
 
 SKIP_INTRO="yes"
 SKIP_PROMPT="yes"
+STANDALONE="no"
 
 EOF_INSTALL
 
-cat functions.sh >> install_node.tmp
-cat install_node.sh >> install_node.tmp
+cat functions.sh install_node.sh >> install_node.tmp
 
 vzctl runscript $VEID install_node.tmp
 
@@ -205,14 +232,12 @@ vzctl runscript $VEID install_node.tmp
 #rm install_node.tmp
 
 cp $VE_PRIVATE/$VPSADMIND_ROOT/thin.yml $VE_PRIVATE/etc/vpsadmin/thin.yml
-sed -i -r "s/(address:) [^\$]+/\1 $IP_ADDR/" $VE_PRIVATE/etc/vpsadmin/thin.yml
+sed -i -r "s/(address:) [^\$]+/\1 $NODE_IP_ADDR/" $VE_PRIVATE/etc/vpsadmin/thin.yml
 
 cat >> $VE_PRIVATE/etc/rc.local <<EOF_LOCAL
 thin -C /etc/vpsadmin/thin.yml start
 
 EOF_LOCAL
-
-# FIXME load default db data
 
 title "Restarting VE..."
 run vzctl restart $VEID

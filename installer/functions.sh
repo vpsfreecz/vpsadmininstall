@@ -9,6 +9,8 @@ VPSADMIN_USERNAME="admin"
 
 BASEDIR="`pwd`"
 
+export PATH="$PATH:/usr/local/bin"
+
 function run {
 	if [ "$DEBUG" == "yes" ] ; then
 		echo "RUN $*"

@@ -3,6 +3,9 @@
 PACKAGES="mysql mysql-devel ruby ruby-devel rubygems git iptables iptables-ipv6"
 GEMS="bundler"
 
+title "Adjusting firewall..."
+adjust_firewall
+
 title "Installing packages..."
 run yum -y groupinstall "Development Tools"
 run yum -y install $PACKAGES

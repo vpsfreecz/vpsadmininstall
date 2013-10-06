@@ -85,3 +85,9 @@ function msg {
 		echo "    > $*"
 	fi
 }
+
+function adjust_firewall {
+	run iptables --flush
+	run service iptables save
+	run service iptables restart
+}

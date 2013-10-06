@@ -2,6 +2,9 @@
 
 PACKAGES="httpd php mysql-server mysql php-mysql git expect"
 
+title "Adjusting firewall..."
+adjust_firewall
+
 title "Creating VE..."
 run vzctl create $VEID --ostemplate $TEMPLATE --hostname $HOSTNAME
 run vzctl set $VEID --ipadd $IP_ADDR --nameserver $NAMESERVER --ram 4G --swap 0 --save

@@ -4,6 +4,10 @@ LOGFILE="/root/vpsadmin-install.log"
 GIT_REPO="git://git.vpsfree.cz/"
 VPSADMIND_ROOT="/opt/vpsadmind"
 VPSADMINCTL_ROOT="/opt/vpsadminctl"
+VPSADMIN_ROOT="/opt/vpsadmin"
+VPSADMIN_USERNAME="admin"
+
+BASEDIR="`pwd`"
 
 function run {
 	if [ "$DEBUG" == "yes" ] ; then
@@ -68,16 +72,16 @@ function read_valid {
 
 function title {
 	if [ "$STANDALONE" != "no" ] ; then
-		echo "  * $*"
-	else
 		echo "* $*"
+	else
+		echo "  * $*"
 	fi
 }
 
 function msg {
 	if [ "$STANDALONE" != "no" ] ; then
-		echo "    > $*"
-	else
 		echo "  > $*"
+	else
+		echo "    > $*"
 	fi
 }

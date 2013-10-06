@@ -8,13 +8,14 @@ run rpm --import http://ftp.openvz.org/RPM-GPG-Key-OpenVZ
 msg "Installing vzkernel and vzctl"
 run yum -y install vzkernel vzctl
 
-echo "# vpsadmininstall" >> /etc/rc.d/rc.local
 echo "$BASEDIR/installer/resume.sh \"$BASEDIR\"" >> /etc/rc.d/rc.local
 
 echo ""
 title "Server will reboot in 15 seconds, installation will continue"
 
-run sleep 15
-#run reboot
+if [ "$DEBUG" != "yes" ] ; then
+	run sleep 15
+	run reboot
+fi
 
 exit

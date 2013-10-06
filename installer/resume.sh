@@ -3,6 +3,10 @@
 CFG_VPSADMIN="$1/tmp/vpsadmin_config.sh"
 CFG_NODE="$1/tmp/node_config.sh"
 
+function cleanup {
+	sed -r -i 's/^.+vpsadmininstall\/installer\/resume\.sh.+$//' /etc/rc.d/rc.local
+}
+
 cd "$1"
 . installer/functions.sh
 
@@ -12,7 +16,11 @@ if [ -f "$CFG_VPSADMIN" ] ; then
 	. "$CFG_VPSADMIN"
 	. "$1/installer/vpsadmin_install.sh"
 	
-	mv "$CFG_VPSADMIN" "$CFG_VPSADMIN".deleted
+	if [ "$DEBUG" == "yes" ] ; then
+		mv "$CFG_VPSADMIN" "$CFG_VPSADMIN.done"
+	else
+		rm -f "$CFG_VPSADMIN"
+	fi
 	
 elif [ -f "$CFG_NODE" ] ; then
 	echo "Resuming installation of a new node into vpsAdmin cluster"
@@ -20,11 +28,19 @@ elif [ -f "$CFG_NODE" ] ; then
 	. "$CFG_NODE"
 	. "$1/installer/node_install.sh"
 	
-	mv "$CFG_NODE" "$CFG_NODE".deleted
+	if [ "$DEBUG" == "yes" ] ; then
+		mv "$CFG_NODE" "$CFG_NODE.done"
+	else
+		rm -f "$CFG_NODE"
+	fi
 	
 else
 	echo "Oops! There is nothing to resume!"
+	cleanup
 	exit 1
 fi
 
-sed -i 's/^# vpsadmininstall.+$//g' /etc/rc.local
+cleanup
+
+echo ""
+read -p "Press enter to continue to login"

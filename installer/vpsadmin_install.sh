@@ -183,6 +183,7 @@ NODE_LOC=1
 VPSADMIND_OPTS="--remote-control"
 
 STANDALONE="no"
+DEBUG="$DEBUG"
 
 EOF_INSTALL
 

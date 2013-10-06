@@ -71,7 +71,8 @@ run /etc/init.d/vpsadmind start
 run sleep 5
 
 msg "Registering"
-cmd="vpsadminctl install --id $NODE_ID --name $NODE_NAME --role $NODE_ROLE --location $NODE_LOC --addr $NODE_IP_ADDR --propagate"
+# Do not generate configs before vpsAdmind knows the fs type
+cmd="vpsadminctl install --id $NODE_ID --name $NODE_NAME --role $NODE_ROLE --location $NODE_LOC --addr $NODE_IP_ADDR --propagate --no-generate-configs"
 
 if [ "$NODE_ROLE" == "node" ] ; then
 	cmd="$cmd --maxvps $NODE_MAXVPS --ve-private $NODE_VE_PRIVATE --fstype $NODE_FSTYPE"
@@ -80,6 +81,10 @@ fi
 run "$cmd"
 
 run vpsadminctl restart
+
+if [ "$NODE_ROLE" == "node" ] ; then
+	run vpsadminctl install --no-create --generate-configs
+fi
 
 if [ "$STANDALONE" != "no" ] ; then
 	echo ""

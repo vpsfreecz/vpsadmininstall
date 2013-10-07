@@ -35,7 +35,13 @@ if [ "$NODE_ROLE" == "node" ] ; then
 fi
 
 run service iptables save
-run service iptables restart
+
+# openvz is somehow blocking module iptable_filter
+# to restart iptables, vpses must be stopped
+# useful only for vpsadmin_install.sh
+if [ "$IPTABLES_RESTART" != "no" ] ; then
+	run service iptables restart
+fi
 
 title "Installing packages..."
 run yum -y groupinstall "Development Tools"

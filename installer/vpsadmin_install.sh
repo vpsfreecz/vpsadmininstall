@@ -138,7 +138,7 @@ db_import installer/db/config.sql
 db_import installer/db/sysconfig.sql
 
 db_query "USE $DB_NAME ; INSERT INTO cfg_dns SET dns_ip='$NAMESERVER',dns_label='$NAMESERVER',dns_is_universal=1;"
-db_query "USE $DB_NAME ; INSERT INTO vps SET vps_id=101,vps_created=UNIX_TIMESTAMP(NOW()),m_id=1,vps_hostname='$HOSTNAME',vps_template=1,vps_nameserver='$NAMESERVER',vps_server=100;"
+db_query "USE $DB_NAME ; INSERT INTO vps SET vps_id=101,vps_created=UNIX_TIMESTAMP(NOW()),m_id=1,vps_hostname='$HOSTNAME',vps_template=1,vps_nameserver='$NAMESERVER',vps_server=2;"
 db_query "USE $DB_NAME ; INSERT INTO vps_ip SET vps_id=$VEID,ip_v=4,ip_location=1,ip_addr='$IP_ADDR';"
 db_query "USE $DB_NAME ; INSERT INTO vps_has_config (vps_id,config_id,\`order\`) VALUES ($VEID,27,1), ($VEID,28,2), ($VEID,6,3), ($VEID,22,4);"
 db_query "USE $DB_NAME ; INSERT INTO sysconfig SET cfg_name='general_base_url', cfg_value='\"http:\/\/$HOSTNAME\/\"';"
@@ -191,6 +191,7 @@ NODE_ROLE=node
 NODE_LOC=1
 
 STANDALONE="no"
+IPTABLES_RESTART="no"
 
 . installer/node_install.sh
 
@@ -200,7 +201,7 @@ STANDALONE="yes"
 # Configure console router
 msg "Configuring console router"
 run cp $VE_PRIVATE/$VPSADMIND_ROOT/thin.yml $VE_PRIVATE/etc/vpsadmin/thin.yml
-sed -i -r "s/(address:) [^$]+/\1 $NODE_IP_ADDR/" $VE_PRIVATE/etc/vpsadmin/thin.yml
+sed -i -r "s/(address:) [^$]+/\1 $IP_ADDR/" $VE_PRIVATE/etc/vpsadmin/thin.yml
 
 cat >> $VE_PRIVATE/etc/rc.local <<EOF_LOCAL
 thin -C /etc/vpsadmin/thin.yml start
@@ -208,7 +209,9 @@ thin -C /etc/vpsadmin/thin.yml start
 EOF_LOCAL
 
 title "Restarting VE..."
-run vzctl restart $VEID
+run vzctl stop $VEID
+run service iptables restart
+run vzctl start $VEID
 
 echo ""
 echo "MySQL root password:     $DB_ROOT_PASS"

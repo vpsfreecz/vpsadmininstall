@@ -10,6 +10,9 @@ function cleanup {
 cd "$1"
 . installer/functions.sh
 
+echo ""
+echo ""
+
 if [ -f "$CFG_VPSADMIN" ] ; then
 	echo "Resuming installation of vpsAdmin cluster"
 	

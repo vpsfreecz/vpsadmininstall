@@ -199,7 +199,7 @@ IPTABLES_RESTART="no"
 STANDALONE="yes"
 
 # Configure console router
-msg "Configuring console router"
+title "Configuring console router..."
 run cp $VE_PRIVATE/$VPSADMIND_ROOT/thin.yml $VE_PRIVATE/etc/vpsadmin/thin.yml
 sed -i -r "s/(address:) [^$]+/\1 $IP_ADDR/" $VE_PRIVATE/etc/vpsadmin/thin.yml
 
@@ -207,6 +207,36 @@ cat >> $VE_PRIVATE/etc/rc.local <<EOF_LOCAL
 thin -C /etc/vpsadmin/thin.yml start
 
 EOF_LOCAL
+
+title "Configuring cron jobs..."
+cat > $VE_PRIVATE/etc/cron.d/vpsadmin <<EOF_CRONTAB
+### vpsAdmin cron jobs ###
+
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+HOME=/
+
+# Notify users about expiration and payment
+# Uncomment to enable
+# 0 0 * * *       apache php /var/www/virtual/vpsadmin.vpsfree.cz/htdocs/cron_mailer.php
+
+# Summary of nonpayers for admins
+# Uncomment to enable
+# 0 0 * * *       apache php /var/www/virtual/vpsadmin.vpsfree.cz/htdocs/cron_nonpayers.php
+
+# Daily backups
+# Uncomment to enable backups
+# 0 1 * * *       apache ruby /opt/vpsadmind/backup.rb
+
+# vpsAdmin lazy delete
+50 0 * * *      apache php /var/www/virtual/vpsadmin.vpsfree.cz/htdocs/cron_delete.php
+
+# Daily reports, informs admins about
+# Uncomment to enable daily reports
+# 0 9 * * *       apache ruby /opt/vpsadmind/daily_report.rb
+
+EOF_CRONTAB
 
 title "Restarting VE..."
 run vzctl stop $VEID

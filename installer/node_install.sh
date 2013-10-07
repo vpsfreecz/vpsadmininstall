@@ -100,7 +100,10 @@ if [ "$NODE_ROLE" == "node" ] ; then
 	cmd="$cmd --maxvps $NODE_MAXVPS --ve-private $NODE_VE_PRIVATE --fstype $NODE_FSTYPE"
 fi
 
-run_info "$cmd"
+if [ "$DEBUG" == "yes" ] ; then
+	run_info "$cmd"
+fi
+
 NODE_ID="`$cmd`"
 
 run vpsadmind_config

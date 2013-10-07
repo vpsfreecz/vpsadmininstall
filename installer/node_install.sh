@@ -4,7 +4,11 @@ PACKAGES="mysql mysql-devel ruby ruby-devel rubygems git iptables iptables-ipv6"
 GEMS="bundler"
 
 title "Adjusting firewall..."
-adjust_firewall
+run iptables --flush
+run iptables -A INPUT -s $IP_ADDR -p tcp --dport 8081 -j ACCEPT
+run iptables -A INPUT -p tcp --dport 8081 -j DROP
+run service iptables save
+run service iptables restart
 
 title "Installing packages..."
 run yum -y groupinstall "Development Tools"

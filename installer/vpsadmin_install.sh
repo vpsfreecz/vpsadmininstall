@@ -195,7 +195,7 @@ vzctl runscript $VEID tmp/node_install.sh
 #tmp/node_install.sh
 
 run cp $VE_PRIVATE/$VPSADMIND_ROOT/thin.yml $VE_PRIVATE/etc/vpsadmin/thin.yml
-sed -i -r 's/(address:) [^$]+/\1 $NODE_IP_ADDR/' $VE_PRIVATE/etc/vpsadmin/thin.yml
+sed -i -r "s/(address:) [^$]+/\1 $NODE_IP_ADDR/" $VE_PRIVATE/etc/vpsadmin/thin.yml
 
 cat >> $VE_PRIVATE/etc/rc.local <<EOF_LOCAL
 thin -C /etc/vpsadmin/thin.yml start

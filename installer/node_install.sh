@@ -2,11 +2,38 @@
 
 PACKAGES="mysql mysql-devel ruby ruby-devel rubygems git iptables iptables-ipv6"
 GEMS="bundler"
+NODE_ID=0
+
+function vpsadmind_config {
+	cat > /etc/vpsadmin/vpsadmind.yml <<EOF
+# vpsAdmind config file
+
+:db:
+    :host: $DB_HOST
+    :user: $DB_USER
+    :pass: $DB_PASS
+    :name: $DB_NAME
+
+:vpsadmin:
+    :server_id: $NODE_ID
+    :domain: $DOMAIN
+    :threads: 4
+
+:console:
+    :host: $NODE_IP_ADDR
+    :port: 8081
+
+EOF
+}
 
 title "Adjusting firewall..."
 run iptables --flush
-run iptables -A INPUT -s $IP_ADDR -p tcp --dport 8081 -j ACCEPT
-run iptables -A INPUT -p tcp --dport 8081 -j DROP
+
+if [ "$NODE_ROLE" == "node" ] ; then
+	run iptables -A INPUT -s $IP_ADDR -p tcp --dport 8081 -j ACCEPT
+	run iptables -A INPUT -p tcp --dport 8081 -j DROP
+fi
+
 run service iptables save
 run service iptables restart
 
@@ -29,25 +56,7 @@ run mkdir -m 0700 -p /root/.ssh
 msg "Creating configs"
 run mkdir -p /etc/vpsadmin
 
-cat > /etc/vpsadmin/vpsadmind.yml <<EOF
-# vpsAdmind config file
-
-:db:
-    :host: $DB_HOST
-    :user: $DB_USER
-    :pass: $DB_PASS
-    :name: $DB_NAME
-
-:vpsadmin:
-    :server_id: $NODE_ID
-    :domain: $DOMAIN
-    :threads: 4
-
-:console:
-    :host: $NODE_IP_ADDR
-    :port: 8081
-
-EOF
+run vpsadmind_config
 
 cat > /etc/sysconfig/vpsadmind <<EOF
 # Configuration file for the vpsadmind service.
@@ -79,18 +88,22 @@ run sleep 5
 
 msg "Registering"
 # Do not generate configs before vpsAdmind knows the fs type
-cmd="vpsadminctl install --id $NODE_ID --name $NODE_NAME --role $NODE_ROLE --location $NODE_LOC --addr $NODE_IP_ADDR --propagate --no-generate-configs"
+cmd="vpsadminctl install -p --name $NODE_NAME --role $NODE_ROLE --location $NODE_LOC --addr $NODE_IP_ADDR --no-propagate --no-generate-configs"
 
 if [ "$NODE_ROLE" == "node" ] ; then
 	cmd="$cmd --maxvps $NODE_MAXVPS --ve-private $NODE_VE_PRIVATE --fstype $NODE_FSTYPE"
 fi
 
-run "$cmd"
+run_info "$cmd"
+NODE_ID="`$cmd`"
+
+run vpsadmind_config
 
 run vpsadminctl restart
+run sleep 5
 
 if [ "$NODE_ROLE" == "node" ] ; then
-	run vpsadminctl install --no-create --generate-configs
+	run vpsadminctl install --no-create --propagate --generate-configs
 fi
 
 if [ "$STANDALONE" != "no" ] ; then

@@ -3,7 +3,9 @@
 PACKAGES="httpd php mysql-server mysql php-mysql git expect"
 
 title "Adjusting firewall..."
-adjust_firewall
+run iptables --flush
+run service iptables save
+run service iptables restart
 
 title "Creating VE..."
 run vzctl create $VEID --ostemplate $TEMPLATE --hostname $HOSTNAME
@@ -140,6 +142,7 @@ db_query "USE $DB_NAME ; INSERT INTO vps SET vps_id=101,vps_created=UNIX_TIMESTA
 db_query "USE $DB_NAME ; INSERT INTO vps_ip SET vps_id=$VEID,ip_v=4,ip_location=1,ip_addr='$IP_ADDR';"
 db_query "USE $DB_NAME ; INSERT INTO vps_has_config (vps_id,config_id,\`order\`) VALUES ($VEID,27,1), ($VEID,28,2), ($VEID,6,3), ($VEID,22,4);"
 db_query "USE $DB_NAME ; INSERT INTO sysconfig SET cfg_name='general_base_url', cfg_value='\"http:\/\/$HOSTNAME\/\"';"
+db_query "USE $DB_NAME ; ALTER TABLE vps AUTO_INCREMENT=102;"
 
 title "Configuring web server..."
 cat > $VE_PRIVATE/etc/httpd/conf.d/vpsadmin.conf <<EOF_HTTPD
@@ -149,19 +152,6 @@ cat > $VE_PRIVATE/etc/httpd/conf.d/vpsadmin.conf <<EOF_HTTPD
 </VirtualHost>
 
 EOF_HTTPD
-
-# Install vpsAdmind on CT0
-title "Installing vpsAdmind as node..."
-NODE_ID=100
-NODE_NAME="`hostname`"
-NODE_ROLE=node
-NODE_LOC=1
-
-STANDALONE="no"
-
-. installer/node_install.sh
-
-STANDALONE="yes"
 
 # Install mailer inside CT with vpsAdmin
 title "Installing vpsAdmind as mailer..."
@@ -176,7 +166,7 @@ DB_PASS="$DB_PASS"
 DB_NAME="$DB_NAME"
 DOMAIN="$DOMAIN"
 NODE_IP_ADDR="$IP_ADDR"
-NODE_ID=1
+IP_ADDR="$IP_ADDR"
 NODE_NAME=vpsadmin
 NODE_ROLE=mailer
 NODE_LOC=1
@@ -192,8 +182,23 @@ cat installer/functions.sh installer/node_install.sh >> tmp/node_install.sh
 vzctl runscript $VEID tmp/node_install.sh
 
 # FIXME uncomment
-#tmp/node_install.sh
+#rm tmp/node_install.sh
 
+# Install vpsAdmind on CT0
+title "Installing vpsAdmind as node..."
+NODE_NAME="`hostname`"
+NODE_ROLE=node
+NODE_LOC=1
+
+STANDALONE="no"
+
+. installer/node_install.sh
+
+
+STANDALONE="yes"
+
+# Configure console router
+msg "Configuring console router"
 run cp $VE_PRIVATE/$VPSADMIND_ROOT/thin.yml $VE_PRIVATE/etc/vpsadmin/thin.yml
 sed -i -r "s/(address:) [^$]+/\1 $NODE_IP_ADDR/" $VE_PRIVATE/etc/vpsadmin/thin.yml
 

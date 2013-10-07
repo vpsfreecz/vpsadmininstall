@@ -11,9 +11,13 @@ BASEDIR="`pwd`"
 
 export PATH="$PATH:/usr/local/bin"
 
+function run_info {
+	echo "RUN $*"
+}
+
 function run {
 	if [ "$DEBUG" == "yes" ] ; then
-		echo "RUN $*"
+		run_info $*
 		$*
 	
 	else
@@ -86,10 +90,4 @@ function msg {
 	else
 		echo "    > $*"
 	fi
-}
-
-function adjust_firewall {
-	run iptables --flush
-	run service iptables save
-	run service iptables restart
 }

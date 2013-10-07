@@ -23,7 +23,6 @@ read_valid "Password": DB_PASS .+
 read_valid "Database name:" DB_NAME .+
 
 title "Node"
-read_valid "ID:" NODE_ID [0-9]+ "not valid node ID"
 read_valid "Node name:" NODE_NAME .+
 read_valid "Cluster domain:" DOMAIN .+
 read_valid "Node role (node, storage, mailer):" NODE_ROLE '^node$|^storage$|^mailer$' "not valid node role"
@@ -45,7 +44,6 @@ DB_HOST="$DB_HOST"
 DB_USER="$DB_USER"
 DB_PASS="$DB_PASS"
 DB_NAME="$DB_NAME"
-NODE_ID="$NODE_ID"
 NODE_NAME="$NODE_NAME"
 NODE_ROLE="$NODE_ROLE"
 NODE_LOC="$NODE_LOC"

@@ -35,6 +35,13 @@ fi
 read_valid "What IP address should vpsAdmin frontend use? (IP of container)" IP_ADDR [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ "not valid IPv4 address"
 read_valid "What IP address should use vpsAdmin daemon? (IP of CT0/HW node)" NODE_IP_ADDR [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ "not valid IPv4 address"
 read_valid "CT0/HW node FS type (ext4, zfs, zfs_compat):" NODE_FSTYPE '^ext4$|^zfs$|^zfs_compat$' "not valid FS type"
+
+if [ "$NODE_FSTYPE" == "zfs" ] || [ "$NODE_FSTYPE" == "zfs_compat" ] ; then
+	echo ""
+	echo "Please keep in mind, that you have to manually set up zpool to install ZFS node."
+	echo ""
+fi
+
 read_valid "What is your cluster domain? Nodes will run on subdomains" DOMAIN .+
 
 HOSTNAME="vpsadmin.$DOMAIN"
@@ -42,15 +49,16 @@ HOSTNAME="vpsadmin.$DOMAIN"
 read_valid "What FQDN should vpsAdmin run on?" HOSTNAME .+
 read_valid "What nameserver should vpsAdmin use?" NAMESERVER .+
 
-VE_PRIVATE="/vz/private/$VEID"
 DB_HOST="$IP_ADDR"
 
 echo ""
 echo ""
 
 if [ "$NODE_FSTYPE" == "ext4" ] ; then
+	VE_PRIVATE="/vz/private/$VEID"
 	NODE_VE_PRIVATE="/vz/private/%{veid}"
 else
+	VE_PRIVATE="/vz/private/$VEID/private"
 	NODE_VE_PRIVATE="/vz/private/%{veid}/private"
 fi
 

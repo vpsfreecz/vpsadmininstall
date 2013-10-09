@@ -47,9 +47,19 @@ if [ "$INFO_PROVIDED" != "yes" ] ; then
 fi
 
 if [ "$NODE_ROLE" == "node" ] ; then
+	read_valid "FS type (ext4, zfs, zfs_compat):" NODE_FSTYPE '^ext4$|^zfs$|^zfs_compat$' "not valid FS type"
+	
+	if [ "$NODE_FSTYPE" == "zfs" ] || [ "$NODE_FSTYPE" == "zfs_compat" ] ; then
+		echo ""
+		echo "Please keep in mind, that you have to manually set up zpool to install ZFS node."
+		echo ""
+		
+		NODE_VE_PRIVATE="$NODE_VE_PRIVATE/private"
+	fi
+	
 	read_valid "Maximum VPS number:" NODE_MAXVPS [0-9]+ "not valid number"
 	read_valid "VE private (expands %{veid}):" NODE_VE_PRIVATE .+
-	read_valid "FS type (ext4, zfs, zfs_compat):" NODE_FSTYPE '^ext4$|^zfs$|^zfs_compat$' "not valid FS type"
+	
 	
 else
 	VPSADMIN_OPTS="--remote-control"

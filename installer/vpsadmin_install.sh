@@ -280,8 +280,8 @@ EOF_RDY
 
 cat > "$VPSADMIN_NODE_INFO" <<EOF_NODE
 #!/bin/bash
-Information needed to setup nodes in cluster
-============================================
+# Information needed to setup nodes in cluster
+# ============================================
 ## Database access:
 # Host:
 DB_HOST="$DB_HOST"

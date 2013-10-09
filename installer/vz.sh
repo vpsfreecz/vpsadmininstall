@@ -2,12 +2,11 @@
 
 title "Installing OpenVZ..."
 msg "Configuring repository"
-run wget -P /etc/yum.repos.d/ http://ftp.openvz.org/openvz.repo
+run curl -so /etc/yum.repos.d/openvz.repo http://ftp.openvz.org/openvz.repo
 run rpm --import http://ftp.openvz.org/RPM-GPG-Key-OpenVZ
 
 msg "Installing vzkernel and vzctl"
-run yum -y install vzkernel
-run yum -y install vzctl
+run yum -y install vzkernel vzctl
 
 title "Configuring OpenVZ..."
 

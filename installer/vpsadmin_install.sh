@@ -239,6 +239,7 @@ run service vpsadmind stop
 run vzctl stop $VEID
 run service iptables restart
 run vzctl start $VEID
+run sleep 10
 run service vpsadmind start
 
 title "Writing postinstall information..."

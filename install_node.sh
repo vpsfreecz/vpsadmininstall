@@ -16,4 +16,11 @@ fi
 
 cd "$TARGET"
 
-./installer/node_intro.sh
+tty -s
+if [ "$?" == "0" ] ; then
+	./installer/node_intro.sh
+	
+else
+	PARENT_TTY="`readlink /proc/$PPID/fd/0`"
+	./installer/node_intro.sh < $PARENT_TTY > $PARENT_TTY 2> $PARENT_TTY
+fi

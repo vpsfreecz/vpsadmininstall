@@ -300,11 +300,3 @@ DOMAIN="$DOMAIN"
 IP_ADDR="$IP_ADDR"
 
 EOF_NODE
-
-if [ "$DEBUG" != "yes" ] ; then
-	title "Cleaning up..."
-	run tmp_cleanup
-fi
-
-echo ""
-echo "DONE!"

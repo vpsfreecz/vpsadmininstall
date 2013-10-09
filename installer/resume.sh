@@ -43,4 +43,12 @@ else
 	exit 1
 fi
 
+if [ "$DEBUG" != "yes" ] ; then
+	title "Cleaning up..."
+	run tmp_cleanup
+fi
+
 cleanup
+
+echo ""
+echo "DONE!"

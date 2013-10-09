@@ -60,7 +60,6 @@ if [ "$NODE_ROLE" == "node" ] ; then
 	read_valid "Maximum VPS number:" NODE_MAXVPS [0-9]+ "not valid number"
 	read_valid "VE private (expands %{veid}):" NODE_VE_PRIVATE .+
 	
-	
 else
 	VPSADMIN_OPTS="--remote-control"
 fi

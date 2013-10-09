@@ -235,9 +235,11 @@ HOME=/
 EOF_CRONTAB
 
 title "Restarting VE..."
+run service vpsadmind stop
 run vzctl stop $VEID
 run service iptables restart
 run vzctl start $VEID
+run service vpsadmind start
 
 title "Writing postinstall information..."
 cat > "$VPSADMIN_READY" <<EOF_RDY

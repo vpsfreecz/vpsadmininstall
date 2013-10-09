@@ -115,6 +115,11 @@ if [ "$NODE_ROLE" == "node" ] ; then
 	run vpsadminctl install --no-create --propagate --generate-configs
 fi
 
+if [ "$DEBUG" != "yes" ] ; then
+	title "Cleaning up..."
+	run tmp_cleanup
+fi
+
 if [ "$STANDALONE" != "no" ] ; then
 	echo ""
 	echo "DONE!"

@@ -94,7 +94,7 @@ run sleep 5
 
 msg "Registering"
 # Do not generate configs before vpsAdmind knows the fs type
-cmd="vpsadminctl install -p --name $NODE_NAME --role $NODE_ROLE --location $NODE_LOC --addr $NODE_IP_ADDR --no-propagate --no-generate-configs"
+cmd="vpsadminctl install -p --name $NODE_NAME --role $NODE_ROLE --location $NODE_LOC --addr $NODE_IP_ADDR --no-propagate --no-generate-configs --no-ssh-key"
 
 if [ "$NODE_ROLE" == "node" ] ; then
 	cmd="$cmd --maxvps $NODE_MAXVPS --ve-private $NODE_VE_PRIVATE --fstype $NODE_FSTYPE"
@@ -111,6 +111,14 @@ run vpsadmind_config
 run vpsadminctl restart
 run sleep 5
 
-if [ "$NODE_ROLE" == "node" ] ; then
-	run vpsadminctl install --no-create --propagate --generate-configs --ssh-key
+cmd="vpsadminctl install --no-create --propagate"
+
+if [ "$NODE_ROLE" != "mailer" ] ; then
+	cmd="$cmd --ssh-key"
 fi
+
+if [ "$NODE_ROLE" == "node" ] ; then
+	cmd="$cmd --generate-configs"
+fi
+
+run $cmd

@@ -44,6 +44,3 @@ else
 fi
 
 cleanup
-
-echo ""
-read -p "Press enter to continue to login"

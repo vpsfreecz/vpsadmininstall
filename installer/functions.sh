@@ -6,6 +6,7 @@ VPSADMIND_ROOT="/opt/vpsadmind"
 VPSADMINCTL_ROOT="/opt/vpsadminctl"
 VPSADMIN_ROOT="/opt/vpsadmin"
 VPSADMIN_USERNAME="admin"
+VPSADMIN_NODE_INFO="/root/vpsadmin-node.txt"
 
 BASEDIR="`pwd`"
 
@@ -90,4 +91,9 @@ function msg {
 	else
 		echo "    > $*"
 	fi
+}
+
+function tmp_cleanup {
+	run cd "$BASEDIR"
+	run rm -f tmp/*
 }

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 PACKAGES="httpd php mysql-server mysql php-mysql git expect"
+VPSADMIN_READY="/root/vpsadmin.ready"
 
 title "Adjusting firewall..."
 run iptables --flush
@@ -65,12 +66,6 @@ EOF_MY
 DB_ROOT_PASS=`vzctl exec $VEID mkpasswd -l 20 -s 0`
 DB_PASS=`vzctl exec $VEID mkpasswd -l 20 -s 0`
 ve_run mysqladmin -u root password \'$DB_ROOT_PASS\'
-
-echo ""
-msg "Setting password for MySQL root to: $DB_ROOT_PASS"
-msg "Setting password for MySQL vpsadmin user: $DB_PASS"
-msg "Save these!"
-echo ""
 
 # Remove anonymous users and test database
 msg "Removing anonymous users and test database"
@@ -244,13 +239,70 @@ run vzctl stop $VEID
 run service iptables restart
 run vzctl start $VEID
 
-echo ""
-echo "MySQL root password:     $DB_ROOT_PASS"
-echo "MySQL vpsadmin password: $DB_PASS"
-echo "Password for vpsadmin user will be needed to install nodes."
-echo ""
-echo "vpsAdmin is running at http://$HOSTNAME/"
-echo "  Username: $VPSADMIN_USERNAME"
-echo "  Password: $ADMIN_PASS"
+title "Writing postinstall information..."
+cat > "$VPSADMIN_READY" <<EOF_RDY
+vpsAdmin Credentials
+====================
+Running at http://$HOSTNAME/
+
+ - Username: $VPSADMIN_USERNAME
+ - Password: $ADMIN_PASS
+
+It is recommended to change the password.
+
+Information needed to setup a node in cluster
+---------------------------------------------
+This information is also saved in a bash script at '$VPSADMIN_NODE_INFO'.
+You can pass this file to the node installer and save yourself trouble
+copy & pasting credentials manually.
+
+## Database access
+ - Host:          $DB_HOST
+ - User:          $DB_USER
+ - Password:      $DB_PASS
+ - Database name: $DB_NAME
+
+## Cluster info
+ - Domain:                 $DOMAIN
+ - IP address of frontend: $IP_ADDR
+
+Database access
+---------------
+Password for MySQL root: $DB_ROOT_PASS
+
+Feel free to change it, vpsAdmin won't need it anymore.
+
+The vpsAdmin team.
+
+EOF_RDY
+
+cat > "$VPSADMIN_NODE_INFO" <<EOF_NODE
+#!/bin/bash
+Information needed to setup nodes in cluster
+============================================
+## Database access:
+# Host:
+DB_HOST="$DB_HOST"
+# User:
+DB_USER="$DB_USER"
+# Password:
+DB_PASS="$DB_PASS"
+# Database name:
+DB_NAME="$DB_NAME"
+
+## Cluster info
+# Domain:
+DOMAIN="$DOMAIN"
+
+# IP address of vpsAdmin frontend
+IP_ADDR="$IP_ADDR"
+
+EOF_NODE
+
+if [ "$DEBUG" != "yes" ] ; then
+	title "Cleaning up..."
+	run tmp_cleanup
+fi
+
 echo ""
 echo "DONE!"

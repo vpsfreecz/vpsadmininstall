@@ -16,19 +16,35 @@ read -p "Press enter to continue"
 echo ""
 echo ""
 
-title "Database access"
-read_valid "Host:" DB_HOST .+
-read_valid "User:" DB_USER .+
-read_valid "Password": DB_PASS .+
-read_valid "Database name:" DB_NAME .+
+if [ -f "$VPSADMIN_NODE_INFO" ] ; then
+	title "Using provided node configuration file..."
+	. "$VPSADMIN_NODE_INFO"
+	
+	INFO_PROVIDED=yes
+fi
+
+if [ "$INFO_PROVIDED" != "yes" ] ; then
+	title "Database access"
+	read_valid "Host:" DB_HOST .+
+	read_valid "User:" DB_USER .+
+	read_valid "Password": DB_PASS .+
+	read_valid "Database name:" DB_NAME .+
+fi
 
 title "Node"
 read_valid "Node name:" NODE_NAME .+
-read_valid "Cluster domain:" DOMAIN .+
+
+if [ "$INFO_PROVIDED" != "yes" ] ; then
+	read_valid "Cluster domain:" DOMAIN .+
+fi
+
 read_valid "Node role (node, storage, mailer):" NODE_ROLE '^node$|^storage$|^mailer$' "not valid node role"
 read_valid "Location (ID or label):" NODE_LOC .+
 read_valid "IP address of this node:" NODE_IP_ADDR [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ "not valid IPv4 address"
-read_valid "IP address of vpsAdmin frontend" IP_ADDR [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ "not valid IPv4 address"
+
+if [ "$INFO_PROVIDED" != "yes" ] ; then
+	read_valid "IP address of vpsAdmin frontend" IP_ADDR [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ "not valid IPv4 address"
+fi
 
 if [ "$NODE_ROLE" == "node" ] ; then
 	read_valid "Maximum VPS number:" NODE_MAXVPS [0-9]+ "not valid number"

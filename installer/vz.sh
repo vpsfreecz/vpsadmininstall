@@ -6,7 +6,8 @@ run wget -P /etc/yum.repos.d/ http://ftp.openvz.org/openvz.repo
 run rpm --import http://ftp.openvz.org/RPM-GPG-Key-OpenVZ
 
 msg "Installing vzkernel and vzctl"
-run yum -y install vzkernel vzctl
+run yum -y install vzkernel
+run yum -y install vzctl
 
 title "Configuring OpenVZ..."
 

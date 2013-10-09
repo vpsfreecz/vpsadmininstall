@@ -136,13 +136,14 @@ db_query "USE $DB_NAME ; INSERT INTO locations SET location_id=1, location_label
 db_import installer/db/cfg_templates.sql
 db_import installer/db/config.sql
 db_import installer/db/sysconfig.sql
+db_import installer/db/cfg_dns.sql
 
-db_query "USE $DB_NAME ; INSERT INTO cfg_dns SET dns_ip='$NAMESERVER',dns_label='$NAMESERVER',dns_is_universal=1;"
-db_query "USE $DB_NAME ; INSERT INTO vps SET vps_id=101,vps_created=UNIX_TIMESTAMP(NOW()),m_id=1,vps_hostname='$HOSTNAME',vps_template=1,vps_nameserver='$NAMESERVER',vps_server=2;"
+db_query "USE $DB_NAME ; INSERT INTO cfg_dns SET dns_ip='$NAMESERVER',dns_label='$NAMESERVER',dns_location=1;"
+db_query "USE $DB_NAME ; INSERT INTO vps SET vps_id=$VEID,vps_created=UNIX_TIMESTAMP(NOW()),m_id=1,vps_hostname='$HOSTNAME',vps_template=1,vps_nameserver='$NAMESERVER',vps_server=2;"
 db_query "USE $DB_NAME ; INSERT INTO vps_ip SET vps_id=$VEID,ip_v=4,ip_location=1,ip_addr='$IP_ADDR';"
 db_query "USE $DB_NAME ; INSERT INTO vps_has_config (vps_id,config_id,\`order\`) VALUES ($VEID,27,1), ($VEID,28,2), ($VEID,6,3), ($VEID,22,4);"
 db_query "USE $DB_NAME ; INSERT INTO sysconfig SET cfg_name='general_base_url', cfg_value='\"http:\/\/$HOSTNAME\/\"';"
-db_query "USE $DB_NAME ; ALTER TABLE vps AUTO_INCREMENT=102;"
+db_query "USE $DB_NAME ; ALTER TABLE vps AUTO_INCREMENT=$(($VEID+1));"
 
 title "Configuring web server..."
 cat > $VE_PRIVATE/etc/httpd/conf.d/vpsadmin.conf <<EOF_HTTPD

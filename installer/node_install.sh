@@ -52,8 +52,11 @@ title "Installing vpsAdmind..."
 msg "Fetching sources"
 run git clone ${GIT_REPO}vpsadmind.git $VPSADMIND_ROOT
 run cd $VPSADMIND_ROOT
-# FIXME REMOVE
-run git checkout devel
+
+if [ "$VPSADMIN_DEVEL" == "yes" ] ; then
+	run git checkout devel
+fi
+
 run bundle install
 run ln -s $VPSADMIND_ROOT/scripts/vpsadmind.init /etc/init.d/vpsadmind
 run ln -s $VPSADMIND_ROOT/scripts/vpsadmind.logrotate /etc/logrotate.d/vpsadmind
@@ -82,8 +85,11 @@ title "Installing vpsAdminctl..."
 msg "Fetching sources"
 run git clone ${GIT_REPO}vpsadminctl.git $VPSADMINCTL_ROOT
 run cd $VPSADMINCTL_ROOT
-# FIXME REMOVE
-run git checkout devel
+
+if [ "$VPSADMIN_DEVEL" == "yes" ] ; then
+	run git checkout devel
+fi
+
 run bundle install
 run ln -s $VPSADMINCTL_ROOT/vpsadminctl.rb /usr/local/bin/vpsadminctl
 

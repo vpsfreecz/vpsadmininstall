@@ -84,10 +84,11 @@ title "Installing vpsAdmin..."
 msg "Fetching sources"
 ve_run git clone ${GIT_REPO}vpsadmin.git $VPSADMIN_ROOT
 
-# FIXME REMOVE
-run cd "$VE_PRIVATE/$VPSADMIN_ROOT"
-run git checkout devel
-run cd "$BASEDIR"
+if [ "$VPSADMIN_DEVEL" == "yes" ] ; then
+	run cd "$VE_PRIVATE/$VPSADMIN_ROOT"
+	run git checkout devel
+	run cd "$BASEDIR"
+fi
 
 msg "Creating config"
 ve_run mkdir -m 0750 /etc/vpsadmin
@@ -169,6 +170,7 @@ NODE_LOC=1
 VPSADMIND_OPTS="--remote-control"
 
 STANDALONE="no"
+VPSADMIN_DEVEL="$VPSADMIN_DEVEL"
 DEBUG="$DEBUG"
 
 EOF_INSTALL
@@ -176,9 +178,6 @@ EOF_INSTALL
 cat installer/functions.sh installer/node_install.sh >> tmp/node_install.sh
 
 vzctl runscript $VEID tmp/node_install.sh
-
-# FIXME uncomment
-#rm tmp/node_install.sh
 
 # Install vpsAdmind on CT0
 title "Installing vpsAdmind as node..."

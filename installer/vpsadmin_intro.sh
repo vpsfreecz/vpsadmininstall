@@ -83,6 +83,7 @@ NODE_FSTYPE="$NODE_FSTYPE"
 
 VPSADMIND_OPTS="--export-console --remote-control"
 
+VPSADMIN_DEVEL="$VPSADMIN_DEVEL"
 DEBUG="$DEBUG"
 
 EOF

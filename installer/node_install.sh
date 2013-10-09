@@ -112,5 +112,5 @@ run vpsadminctl restart
 run sleep 5
 
 if [ "$NODE_ROLE" == "node" ] ; then
-	run vpsadminctl install --no-create --propagate --generate-configs
+	run vpsadminctl install --no-create --propagate --generate-configs --ssh-key
 fi

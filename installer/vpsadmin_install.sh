@@ -18,7 +18,13 @@ title "Installing packages..."
 ve_run yum -y install $PACKAGES
 ve_run chkconfig httpd on
 ve_run chkconfig mysqld on
-ve_run /etc/init.d/mysqld start
+ve_run service mysqld start
+
+title "Configuring web server..."
+run cp installer/data/httpd/conf/* $VE_PRIVATE/etc/httpd/conf/
+run cp installer/data/httpd/conf.d/ $VE_PRIVATE/etc/httpd/conf.d/
+run cp installer/data/httpd/www/* $VE_PRIVATE/var/www/html/
+ve_run service httpd restart
 
 title "Configuring database..."
 msg "Edit my.cnf"
@@ -141,15 +147,6 @@ db_query "USE $DB_NAME ; INSERT INTO vps_has_config (vps_id,config_id,\`order\`)
 db_query "USE $DB_NAME ; INSERT INTO sysconfig SET cfg_name='general_base_url', cfg_value='\"http:\/\/$HOSTNAME\/\"';"
 db_query "USE $DB_NAME ; ALTER TABLE vps AUTO_INCREMENT=$(($VEID+1));"
 
-title "Configuring web server..."
-cat > $VE_PRIVATE/etc/httpd/conf.d/vpsadmin.conf <<EOF_HTTPD
-<VirtualHost *:80>
-	ServerName   $HOSTNAME
-	DocumentRoot $VPSADMIN_ROOT
-</VirtualHost>
-
-EOF_HTTPD
-
 # Install mailer inside CT with vpsAdmin
 title "Installing vpsAdmind as mailer..."
 run cd "$BASEDIR"
@@ -233,6 +230,25 @@ HOME=/
 
 EOF_CRONTAB
 
+title "Configuring web server..."
+cat > $VE_PRIVATE/etc/httpd/conf.d/vpsadmin.conf <<EOF_HTTPD
+ServerName   $HOSTNAME
+DocumentRoot $VPSADMIN_ROOT
+
+<Directory "$VPSADMIN_ROOT">
+    Options Indexes FollowSymLinks
+
+    AllowOverride None
+
+    Order allow,deny
+    Allow from all
+</Directory>
+
+EOF_HTTPD
+
+run rm -f $VE_PRIVATE/etc/httpd/conf.d/vpsadmin-installing.conf
+run rm -f $VE_PRIVATE/var/www/html/index.html
+
 title "Restarting VE..."
 run service vpsadmind stop
 run vzctl stop $VEID
@@ -300,3 +316,5 @@ DOMAIN="$DOMAIN"
 IP_ADDR="$IP_ADDR"
 
 EOF_NODE
+
+set_install_state "installed"

@@ -128,3 +128,7 @@ if [ "$NODE_ROLE" == "node" ] ; then
 fi
 
 run $cmd
+
+if [ "$STANDALONE" == "yes" ] ; then
+	set_install_state "installed"
+fi

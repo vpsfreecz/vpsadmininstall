@@ -29,11 +29,17 @@ function run {
 	local ret=$?
 	
 	if [ $ret != 0 ] ; then
-		echo "Installation failed, command '$*' returned exit code $ret."
-		echo "Check log file at $LOGFILE"
-		echo ""
-		echo "Before retrying the installation, destroy CT $VEID with:"
-		echo "    vzctl stop $VEID && vzctl destroy $VEID"
+		cat > /root/vpsadmin.status <<EOF_ERR
+		
+Installation failed, command '$*' returned exit code $ret."
+Check log file at $LOGFILE"
+
+Before retrying the installation, destroy CT $VEID with:"
+    vzctl stop $VEID && vzctl destroy $VEID"
+
+EOF_ERR
+		
+		cat /root/vpsadmin.status
 		exit 1
 	fi
 }
@@ -96,4 +102,8 @@ function msg {
 function tmp_cleanup {
 	run cd "$BASEDIR"
 	run rm -f tmp/*
+}
+
+function set_install_state {
+	echo "$1" > /root/vpsadmin.status
 }

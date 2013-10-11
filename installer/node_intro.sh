@@ -2,6 +2,8 @@
 
 . installer/functions.sh
 
+set_install_state "installing"
+
 NODE_MAXVPS=30
 NODE_VE_PRIVATE="/vz/private/%{veid}"
 NODE_FSTYPE="ext4"

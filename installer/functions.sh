@@ -40,7 +40,7 @@ Before retrying the installation, destroy CT $VEID with:"
 
 EOF_ERR
 		
-		cat /root/vpsadmin.status
+		cat /root/vpsadmin.status | tee -a "$VPSADMIN_PROGRESS"
 		exit 1
 	fi
 }

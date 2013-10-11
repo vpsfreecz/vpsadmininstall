@@ -85,7 +85,7 @@ function read_valid {
 }
 
 function progress {
-	echo $* | tee -a "$VPSADMIN_PROGRESS"
+	echo "$*" | tee -a "$VPSADMIN_PROGRESS"
 }
 
 function title {

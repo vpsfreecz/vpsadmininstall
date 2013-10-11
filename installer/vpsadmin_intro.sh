@@ -21,6 +21,7 @@ DB_SOCK="/var/lib/mysql/mysql.sock"
 STANDALONE="yes"
 
 get_default_addr NODE_IP_ADDR
+get_vz_fs
 
 echo "vpsAdmin Cluster Installer"
 echo "--------------------------"
@@ -36,7 +37,10 @@ fi
 
 read_valid "What IP address should vpsAdmin frontend use? (IP of container)" IP_ADDR [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ "not valid IPv4 address"
 read_valid "What IP address should use vpsAdmin daemon? (IP of CT0/HW node)" NODE_IP_ADDR [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ "not valid IPv4 address"
-read_valid "CT0/HW node FS type (ext4, zfs_compat)" NODE_FSTYPE '^ext4$|^zfs_compat$' "not valid FS type"
+
+if [ "$NODE_FSTYPE" == "" ] ; then
+	read_valid "CT0/HW node FS type (ext4, zfs_compat)" NODE_FSTYPE '^ext4$|^zfs_compat$' "not valid FS type"
+fi
 
 if [ "$NODE_FSTYPE" == "zfs" ] || [ "$NODE_FSTYPE" == "zfs_compat" ] ; then
 	echo ""

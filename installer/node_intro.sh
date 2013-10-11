@@ -11,6 +11,7 @@ VPSADMIND_OPTS="--export-console --remote-control"
 STANDALONE="yes"
 
 get_default_addr NODE_IP_ADDR
+get_vz_fs
 
 echo "vpsAdmin Node Installer"
 echo "-----------------------"
@@ -51,7 +52,10 @@ if [ "$INFO_PROVIDED" != "yes" ] ; then
 fi
 
 if [ "$NODE_ROLE" == "node" ] ; then
-	read_valid "FS type (ext4, zfs_compat)" NODE_FSTYPE '^ext4$|^zfs_compat$' "not valid FS type"
+	
+	if [ "$NODE_FSTYPE" == "" ] ; then
+		read_valid "FS type (ext4, zfs_compat)" NODE_FSTYPE '^ext4$|^zfs_compat$' "not valid FS type"
+	fi
 	
 	if [ "$NODE_FSTYPE" == "zfs" ] || [ "$NODE_FSTYPE" == "zfs_compat" ] ; then
 		echo ""

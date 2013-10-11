@@ -115,3 +115,24 @@ function get_default_addr {
 		eval $1="`ip a s dev $INTERFACE | grep "inet " | awk '{ print $2; }' | cut -d'/' -f1`"
 	fi
 }
+
+function get_vz_fs {
+	local MOUNTS="`mount | grep /vz`"
+	
+	for m in $MOUNTS ; do
+		if [ "`echo -n $m | cut -d ' ' -f3`" == "/vz" ] ; then
+			NODE_FSTYPE="`echo -n $m | cut -d ' ' -f5`"
+			
+			if [ "$NODE_FSTYPE" != "ext4" ] && [ "$NODE_FSTYPE" != "zfs" ] ; then
+				NODE_FSTYPE=ext4
+				
+			elif [ "$NODE_FSTYPE" == "zfs" ] ; then
+				NODE_FSTYPE=zfs_compat
+			fi
+		fi
+	done
+	
+	if [ "$DEBUG" == "yes" ] ; then
+		echo "Auto-detected node FS type to '$NODE_FSTYPE'"
+	fi
+}

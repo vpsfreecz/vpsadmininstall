@@ -14,17 +14,17 @@ run vzctl set $VEID --ipadd $IP_ADDR --nameserver $NAMESERVER --ram 4G --swap 0 
 run vzctl start $VEID
 run sleep 5
 
-title "Installing packages..."
-ve_run yum -y install $PACKAGES
-ve_run chkconfig httpd on
-ve_run chkconfig mysqld on
-ve_run service mysqld start
-
 title "Configuring web server..."
 run cp installer/data/httpd/conf/* $VE_PRIVATE/etc/httpd/conf/
 run cp installer/data/httpd/conf.d/ $VE_PRIVATE/etc/httpd/conf.d/
 run cp installer/data/httpd/www/* $VE_PRIVATE/var/www/html/
 ve_run service httpd restart
+
+title "Installing packages..."
+ve_run yum -y install $PACKAGES
+ve_run chkconfig httpd on
+ve_run chkconfig mysqld on
+ve_run service mysqld start
 
 title "Configuring database..."
 msg "Edit my.cnf"

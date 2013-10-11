@@ -16,7 +16,7 @@ run sleep 5
 
 title "Configuring web server..."
 run cp installer/data/httpd/conf/* $VE_PRIVATE/etc/httpd/conf/
-run cp installer/data/httpd/conf.d/ $VE_PRIVATE/etc/httpd/conf.d/
+run cp installer/data/httpd/conf.d/* $VE_PRIVATE/etc/httpd/conf.d/
 run cp installer/data/httpd/www/* $VE_PRIVATE/var/www/html/
 ve_run service httpd restart
 

@@ -51,7 +51,7 @@ if [ "$INFO_PROVIDED" != "yes" ] ; then
 fi
 
 if [ "$NODE_ROLE" == "node" ] ; then
-	read_valid "FS type (ext4, zfs, zfs_compat)" NODE_FSTYPE '^ext4$|^zfs$|^zfs_compat$' "not valid FS type"
+	read_valid "FS type (ext4, zfs_compat)" NODE_FSTYPE '^ext4$|^zfs_compat$' "not valid FS type"
 	
 	if [ "$NODE_FSTYPE" == "zfs" ] || [ "$NODE_FSTYPE" == "zfs_compat" ] ; then
 		echo ""

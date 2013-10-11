@@ -7,6 +7,7 @@ VPSADMINCTL_ROOT="/opt/vpsadminctl"
 VPSADMIN_ROOT="/opt/vpsadmin"
 VPSADMIN_USERNAME="admin"
 VPSADMIN_NODE_INFO="/root/vpsadmin-node.txt"
+VPSADMIN_PROGRESS="/root/vpsadmin.progress"
 
 BASEDIR="`pwd`"
 
@@ -83,19 +84,23 @@ function read_valid {
 	done
 }
 
+function progress {
+	echo $* | tee -a "$VPSADMIN_PROGRESS"
+}
+
 function title {
 	if [ "$STANDALONE" != "no" ] ; then
-		echo "* $*"
+		progress "* $*"
 	else
-		echo "  * $*"
+		progress "  * $*"
 	fi
 }
 
 function msg {
 	if [ "$STANDALONE" != "no" ] ; then
-		echo "  > $*"
+		progress "  > $*"
 	else
-		echo "    > $*"
+		progress "    > $*"
 	fi
 }
 

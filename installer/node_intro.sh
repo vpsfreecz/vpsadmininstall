@@ -12,6 +12,8 @@ VPSADMIND_OPTS="--export-console --remote-control"
 
 STANDALONE="yes"
 
+get_default_addr NODE_IP_ADDR
+
 echo "vpsAdmin Node Installer"
 echo "-----------------------"
 echo "This installer will install a new node into your vpsAdmin cluster."

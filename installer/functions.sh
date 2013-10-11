@@ -107,3 +107,11 @@ function tmp_cleanup {
 function set_install_state {
 	echo "$1" > /root/vpsadmin.status
 }
+
+function get_default_addr {
+	local INTERFACE="`ip r s | grep default | grep -oP 'dev\ [a-zA-Z0-9-.]+' | sed 's/dev\ //g'`"
+	
+	if [ "$INTERFACE" != "" ] ; then
+		eval $1="`ip a s dev $INTERFACE | grep "inet " | awk '{ print $2; }' | cut -d'/' -f1`"
+	fi
+}

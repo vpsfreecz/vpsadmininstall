@@ -22,6 +22,8 @@ DB_SOCK="/var/lib/mysql/mysql.sock"
 
 STANDALONE="yes"
 
+get_default_addr NODE_IP_ADDR
+
 echo "vpsAdmin Cluster Installer"
 echo "--------------------------"
 echo "This installer will install OpenVZ, then reboot the system and continue"

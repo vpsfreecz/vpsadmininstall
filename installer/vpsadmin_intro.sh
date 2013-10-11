@@ -2,8 +2,6 @@
 
 . installer/functions.sh
 
-set_install_state "installing"
-
 TEMPLATE="scientific-6-x86_64"
 DOMAIN="your.domain"
 IP_ADDR=""

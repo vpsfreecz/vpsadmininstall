@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set_install_state "installing"
+
 title "Installing OpenVZ..."
 msg "Configuring repository"
 run curl -so /etc/yum.repos.d/openvz.repo http://ftp.openvz.org/openvz.repo

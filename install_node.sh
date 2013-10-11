@@ -1,6 +1,15 @@
 #!/bin/bash
 
 TARGET="/opt/vpsadmininstall"
+STATUS_FILE="/root/vpsadmin.status"
+
+if [ -f "$STATUS_FILE" ] && [ "`cat $STATUS_FILE`" == "installing" ] ; then
+	echo "It seems that installation is already in progress."
+	echo "If you know that it is not so, please remove file '$STATUS_FILE'"
+	echo "and start installer again."
+	
+	exit 1
+fi
 
 which git > /dev/null 2>&1
 

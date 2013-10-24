@@ -124,7 +124,7 @@ function get_default_addr {
 function get_vz_fs {
 	local MOUNTS="`mount | grep /vz`"
 	
-	for m in $MOUNTS ; do
+	for m in "$MOUNTS" ; do
 		if [ "`echo -n $m | cut -d ' ' -f3`" == "/vz" ] ; then
 			NODE_FSTYPE="`echo -n $m | cut -d ' ' -f5`"
 			

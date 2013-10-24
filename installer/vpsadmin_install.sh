@@ -11,7 +11,7 @@ run service iptables restart
 title "Creating VE..."
 
 if [ "$NODE_FSTYPE" == "zfs" ] || [ "$NODE_FSTYPE" == "zfs_compat" ] ; then
-	run zfs create vz/private/$VEID
+	run zfs create -p vz/private/$VEID
 fi
 
 run vzctl create $VEID --ostemplate $TEMPLATE --private $VE_PRIVATE --hostname $HOSTNAME

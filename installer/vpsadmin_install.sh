@@ -9,7 +9,12 @@ run service iptables save
 run service iptables restart
 
 title "Creating VE..."
-run vzctl create $VEID --ostemplate $TEMPLATE --hostname $HOSTNAME
+
+if [ "$NODE_FSTYPE" == "zfs" ] || [ "$NODE_FSTYPE" == "zfs_compat" ] ; then
+	run zfs create vz/private/$VEID
+fi
+
+run vzctl create $VEID --ostemplate $TEMPLATE --private $VE_PRIVATE --hostname $HOSTNAME
 run vzctl set $VEID --ipadd $IP_ADDR --nameserver $NAMESERVER --ram 4G --swap 0 --save
 run vzctl start $VEID
 run sleep 5

@@ -33,6 +33,7 @@ fi
 
 if [ "$VPSADMIN_CLONE" != "no" ] ; then
 	git clone git://git.vpsfree.cz/vpsadmininstall.git "$TARGET" >> /dev/null 2>&1
+	cd "$TARGET"
 	run git pull
 fi
 

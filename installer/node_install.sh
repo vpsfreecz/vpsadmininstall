@@ -79,8 +79,6 @@ OPTS="$VPSADMIND_OPTS"
 #CONFIG=/etc/vpsadmin/vpsadmind.yml
 EOF
 
-run chkconfig vpsadmind on
-
 title "Installing vpsAdminctl..."
 msg "Fetching sources"
 run git clone ${GIT_REPO}vpsadminctl.git $VPSADMINCTL_ROOT
@@ -128,6 +126,42 @@ if [ "$NODE_ROLE" == "node" ] ; then
 fi
 
 run $cmd
+
+title "Configuring..."
+cat > /etc/rc.d/rc.local <<EOF
+#!/bin/sh
+#
+# This script will be executed *after* all the other init scripts.
+# You can put your own initialization stuff in here if you don't
+# want to do the full Sys V style init stuff.
+
+touch /var/lock/subsys/local
+
+EOF
+
+if [ "$NODE_ROLE" == "node" ] ; then
+	cat load_modules.sh >> /etc/rc.d/rc.local
+fi
+
+cat wait_for_network.sh >> /etc/rc.d/rc.local
+
+if [ "$NODE_ROLE" == "node" ] ; then
+	cat >> /etc/rc.d/rc.local <<EOF
+# Start OpenVZ
+/etc/init.d/vz start
+
+EOF
+fi
+
+cat >> /etc/rc.d/rc.local <<EOF
+# Start vpsAdmind
+/etc/init.d/vpsadmind start
+
+EOF
+
+if [ "$NODE_ROLE" == "node" ] ; then
+	. load_modules.sh
+fi
 
 if [ "$STANDALONE" == "yes" ] ; then
 	set_install_state "installed"

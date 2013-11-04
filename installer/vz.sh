@@ -9,6 +9,7 @@ run rpm --import http://ftp.openvz.org/RPM-GPG-Key-OpenVZ
 
 msg "Installing vzkernel and vzctl"
 run yum -y install vzkernel vzkernel-devel vzctl
+run chkconfig vz off
 
 title "Configuring OpenVZ..."
 

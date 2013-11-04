@@ -9,6 +9,7 @@ function cleanup {
 
 cd "$1"
 . installer/functions.sh
+. "$1/installer/wait_for_network.sh"
 
 echo ""
 echo ""

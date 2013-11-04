@@ -40,12 +40,12 @@ read_valid "What IP address should use vpsAdmin daemon? (IP of CT0/HW node)" NOD
 
 if [ "$NODE_FSTYPE" == "" ] ; then
 	read_valid "CT0/HW node FS type (ext4, zfs_compat)" NODE_FSTYPE '^ext4$|^zfs_compat$' "not valid FS type"
-fi
-
-if [ "$NODE_FSTYPE" == "zfs" ] || [ "$NODE_FSTYPE" == "zfs_compat" ] ; then
-	echo ""
-	echo "Please keep in mind, that you have to manually set up zpool to install ZFS node."
-	echo ""
+	
+	if [ "$NODE_FSTYPE" == "zfs" ] || [ "$NODE_FSTYPE" == "zfs_compat" ] ; then
+		echo ""
+		echo "Please keep in mind, that you have to manually set up zpool to install ZFS node."
+		echo ""
+	fi
 fi
 
 read_valid "What is your cluster domain? Nodes will run on subdomains" DOMAIN .+

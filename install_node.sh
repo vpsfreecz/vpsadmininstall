@@ -32,7 +32,7 @@ if [ "$?" != "0" ] ; then
 fi
 
 if [ "$VPSADMIN_CLONE" != "no" ] ; then
-	run git clone git://git.vpsfree.cz/vpsadmininstall.git "$TARGET"
+	git clone git://git.vpsfree.cz/vpsadmininstall.git "$TARGET" >> /dev/null 2>&1
 	run git pull
 fi
 

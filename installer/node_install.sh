@@ -127,7 +127,10 @@ fi
 
 run $cmd
 
-title "Configuring..."
+title "Configuring system..."
+# OpenVZ is started manually
+run chkconfig vz off
+
 cat > /etc/rc.d/rc.local <<EOF
 #!/bin/sh
 #

@@ -92,4 +92,8 @@ DEBUG="$DEBUG"
 
 EOF
 
-. installer/vz.sh
+if [ "$NODE_ROLE" == "node" ] ; then
+	. installer/vz.sh
+else
+	. reboot.sh
+fi

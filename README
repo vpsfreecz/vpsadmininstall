@@ -1,0 +1,11 @@
+vpsAdmin Installer
+==================
+
+To install cluster, run:
+
+	curl -ko- "https://git.vpsfree.cz/?p=vpsadmininstall.git;a=blob_plain;f=install_vpsadmin.sh;hb=HEAD" | bash
+
+
+To install a new node into cluster, run:
+
+	curl -ko- "https://git.vpsfree.cz/?p=vpsadmininstall.git;a=blob_plain;f=install_node.sh;hb=HEAD" | bash

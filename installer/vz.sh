@@ -17,8 +17,6 @@ if [ "$NODE_FSTYPE" == "zfs" ] || [ "$NODE_FSTYPE" == "zfs_compat" ] ; then
 	run sed -i 's/^DISK_QUOTA=yes$/DISK_QUOTA=no/' /etc/vz/vz.conf
 fi
 
-echo "$BASEDIR/installer/resume.sh \"$BASEDIR\"" >> /etc/rc.d/rc.local
-
-. reboot.sh
+. installer/reboot.sh
 
 exit

@@ -95,5 +95,5 @@ EOF
 if [ "$NODE_ROLE" == "node" ] ; then
 	. installer/vz.sh
 else
-	. reboot.sh
+	. installer/reboot.sh
 fi

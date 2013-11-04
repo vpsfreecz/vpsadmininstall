@@ -16,6 +16,11 @@ fi
 
 run vzctl create $VEID --ostemplate $TEMPLATE --private $VE_PRIVATE --hostname $HOSTNAME
 run vzctl set $VEID --ipadd $IP_ADDR --nameserver $NAMESERVER --ram 4G --swap 0 --save
+
+if [ "$NODE_FSTYPE" == "ext4" ] ; then
+	run vzctl set $VEID --diskspace 10G:10G --save
+fi
+
 run vzctl start $VEID
 run sleep 5
 

@@ -32,11 +32,13 @@ function run {
 	if [ $ret != 0 ] ; then
 		cat > /root/vpsadmin.status <<EOF_ERR
 		
-Installation failed, command '$*' returned exit code $ret."
-Check log file at $LOGFILE"
+Installation failed, command '$*' returned exit code $ret.
+Check log file at $LOGFILE".
 
-Before retrying the installation, destroy CT $VEID with:"
-    vzctl stop $VEID && vzctl destroy $VEID"
+Before retrying the installation, please run either:
+	$BASEDIR/reset.sh
+or
+	curl -ko- "https://git.vpsfree.cz/?p=vpsadmininstall.git;a=blob_plain;f=reset.sh;hb=HEAD" | bash
 
 EOF_ERR
 		

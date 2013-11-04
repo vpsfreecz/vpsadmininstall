@@ -2,6 +2,18 @@
 
 TARGET="/opt/vpsadmininstall"
 STATUS_FILE="/root/vpsadmin.status"
+LOGFILE="/root/vpsadmin-install.log"
+
+function run {
+	$* >> $LOGFILE 2>&1
+	
+	ret="$?"
+	if [ "$ret" != "0" ] ; then
+		echo "Command '$*' exited with code $ret."
+		echo "Check $LOGFILE for errors."
+		exit 1
+	fi
+}
 
 if [ -f "$STATUS_FILE" ] && [ "`cat $STATUS_FILE`" == "installing" ] ; then
 	echo "It seems that installation is already in progress."
@@ -15,12 +27,12 @@ which git > /dev/null 2>&1
 
 if [ "$?" != "0" ] ; then
 	echo "* Installing git..."
-	yum -y -q install git >> /dev/null
+	run yum -y -q install git
 	echo ""
 fi
 
 if [ "$VPSADMIN_CLONE" != "no" ] ; then
-	git clone git://git.vpsfree.cz/vpsadmininstall.git "$TARGET" >> /dev/null
+	run git clone git://git.vpsfree.cz/vpsadmininstall.git "$TARGET"
 fi
 
 cd "$TARGET"

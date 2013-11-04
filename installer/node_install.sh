@@ -128,8 +128,10 @@ fi
 run $cmd
 
 title "Configuring system..."
-# OpenVZ is started manually
-run chkconfig vz off
+if [ "$NODE_ROLE" == "node" ] ; then
+	# OpenVZ is started manually
+	run chkconfig vz off
+fi
 
 cat > /etc/rc.d/rc.local <<EOF
 #!/bin/sh

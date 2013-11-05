@@ -144,11 +144,13 @@ touch /var/lock/subsys/local
 
 EOF
 
-if [ "$NODE_ROLE" == "node" ] ; then
+if [ "$NODE_ROLE" == "node" ] then
 	cat installer/load_modules.sh >> /etc/rc.d/rc.local
 fi
 
-cat installer/wait_for_network.sh >> /etc/rc.d/rc.local
+if [ -f "installer/wait_for_network.sh" ] ; then
+	cat installer/wait_for_network.sh >> /etc/rc.d/rc.local
+fi
 
 if [ "$NODE_ROLE" == "node" ] ; then
 	cat >> /etc/rc.d/rc.local <<EOF
@@ -165,7 +167,7 @@ cat >> /etc/rc.d/rc.local <<EOF
 EOF
 
 if [ "$NODE_ROLE" == "node" ] ; then
-	. load_modules.sh
+	. installer/load_modules.sh
 fi
 
 if [ "$STANDALONE" == "yes" ] ; then
